@@ -1,0 +1,187 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  VPC-only foundation for Zscaler Cloud Connector in private subnet.
+  Creates VPC, private Cloud Connector subnet, private workload subnet,
+  public NAT subnet, IGW, NAT Gateway, and route tables.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: zscaler-cloudconnector
+
+  VpcCidr:
+    Type: String
+    Default: 10.50.0.0/16
+
+  PrivateCloudConnectorSubnetCidr:
+    Type: String
+    Default: 10.50.1.0/24
+
+  PrivateWorkloadSubnetCidr:
+    Type: String
+    Default: 10.50.2.0/24
+
+  PublicNatSubnetCidr:
+    Type: String
+    Default: 10.50.100.0/24
+
+  AvailabilityZone:
+    Type: AWS::EC2::AvailabilityZone::Name
+    Description: Select the AZ where all three subnets will be created.
+
+Resources:
+  ZscalerVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-vpc'
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-igw'
+
+  AttachInternetGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref ZscalerVpc
+      InternetGatewayId: !Ref InternetGateway
+
+  PrivateCloudConnectorSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ZscalerVpc
+      AvailabilityZone: !Ref AvailabilityZone
+      CidrBlock: !Ref PrivateCloudConnectorSubnetCidr
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: Private-cloudconnector-subnet
+
+  PrivateWorkloadSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ZscalerVpc
+      AvailabilityZone: !Ref AvailabilityZone
+      CidrBlock: !Ref PrivateWorkloadSubnetCidr
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: Private-workload-subnet
+
+  PublicNatSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ZscalerVpc
+      AvailabilityZone: !Ref AvailabilityZone
+      CidrBlock: !Ref PublicNatSubnetCidr
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: Public-nat-subnet
+
+  NatGatewayEip:
+    Type: AWS::EC2::EIP
+    DependsOn: AttachInternetGateway
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-nat-eip'
+
+  NatGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatGatewayEip.AllocationId
+      SubnetId: !Ref PublicNatSubnet
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-nat-gateway'
+
+  PublicNatRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ZscalerVpc
+      Tags:
+        - Key: Name
+          Value: Public-nat-routing
+
+  PublicDefaultRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachInternetGateway
+    Properties:
+      RouteTableId: !Ref PublicNatRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicNatSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicNatSubnet
+      RouteTableId: !Ref PublicNatRouteTable
+
+  PrivateCloudConnectorRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ZscalerVpc
+      Tags:
+        - Key: Name
+          Value: Private-cloudconnector-routing
+
+  PrivateCloudConnectorDefaultRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateCloudConnectorRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway
+
+  PrivateCloudConnectorSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateCloudConnectorSubnet
+      RouteTableId: !Ref PrivateCloudConnectorRouteTable
+
+  PrivateWorkloadRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ZscalerVpc
+      Tags:
+        - Key: Name
+          Value: Private-workload-routing
+
+  PrivateWorkloadSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateWorkloadSubnet
+      RouteTableId: !Ref PrivateWorkloadRouteTable
+
+Outputs:
+  VpcId:
+    Value: !Ref ZscalerVpc
+
+  PrivateCloudConnectorSubnetId:
+    Value: !Ref PrivateCloudConnectorSubnet
+
+  PrivateWorkloadSubnetId:
+    Value: !Ref PrivateWorkloadSubnet
+
+  PublicNatSubnetId:
+    Value: !Ref PublicNatSubnet
+
+  NatGatewayId:
+    Value: !Ref NatGateway
+
+  PrivateCloudConnectorRouteTableId:
+    Value: !Ref PrivateCloudConnectorRouteTable
+
+  PrivateWorkloadRouteTableId:
+    Value: !Ref PrivateWorkloadRouteTable
+
+  PublicNatRouteTableId:
+    Value: !Ref PublicNatRouteTable
