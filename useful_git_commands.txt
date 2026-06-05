@@ -1,0 +1,211 @@
+### Useful Git Commands
+
+#### **1. git init**
+- **Purpose:** Initialize a new Git repository in your project folder.
+- **Usage:** 
+  ```bash
+  git init
+  ```
+- **Details:** It sets up the `.git` folder in your project directory, effectively marking it as a repository.
+
+---
+
+#### **2. git clone**
+- **Purpose:** Clone a remote repository to your local machine.
+- **Usage:** 
+  ```bash
+  git clone <repository-url>
+  ```
+- **Details:** Copies an entire repository, including all branches, tags, and history.
+
+---
+
+#### **3. git add**
+- **Purpose:** Add changes in your working directory to the staging area.
+- **Usage:**
+  ```bash
+  git add <file>         # Adds a specific file
+  git add .              # Stages all changes
+  ```
+- **Details:** Files in the staging area will be included in the next commit.
+
+---
+
+#### **4. git commit**
+- **Purpose:** Save staged changes with a descriptive message.
+- **Usage:**
+  ```bash
+  git commit -m "Your commit message"
+  ```
+- **Details:** A commit captures a snapshot of the project’s changes in your Git history.
+
+---
+
+#### **5. git status**
+- **Purpose:** Check the status of your working directory and staging area.
+- **Usage:**
+  ```bash
+  git status
+  ```
+- **Details:** Shows which files are modified, staged, or untracked.
+
+---
+
+#### **6. git push**
+- **Purpose:** Push committed changes from the local repository to a remote repository.
+- **Usage:**
+  ```bash
+  git push origin <branch-name>
+  ```
+- **Details:** Typically used to sync local work with a remote repository (e.g., GitHub, GitLab).
+
+---
+
+#### **7. git pull**
+- **Purpose:** Fetch updates from a remote repository and merge them into your local branch.
+- **Usage:**
+  ```bash
+  git pull origin <branch-name>
+  ```
+- **Details:** Combines `git fetch` and `git merge`.
+
+---
+
+#### **8. git fetch**
+- **Purpose:** Retrieve updates from a remote repository without merging into your current branch.
+- **Usage:**
+  ```bash
+  git fetch origin
+  ```
+- **Details:** Useful for inspecting remote changes before merging them manually.
+
+---
+
+#### **9. git merge**
+- **Purpose:** Merge changes from one branch into another.
+- **Usage:**
+  ```bash
+  git merge <source-branch>
+  ```
+- **Details:** Combines the history of the source branch into the current branch.
+
+---
+
+#### **10. git branch**
+- **Purpose:** Create, list, or delete branches in a repository.
+- **Usage:**
+  ```bash
+  git branch               # List branches
+  git branch <name>        # Create a new branch
+  git branch -d <name>     # Delete a branch
+  ```
+- **Details:** Helps you work on multiple features simultaneously.
+
+---
+
+#### **11. git checkout**
+- **Purpose:** Switch branches or restore files.
+- **Usage:**
+  ```bash
+  git checkout <branch-name>     # Switch branch
+  git checkout <file>            # Restore file
+  ```
+- **Details:** Use `git switch` for switching branches in modern Git versions.
+
+---
+
+#### **12. git log**
+- **Purpose:** View the commit history of your repository.
+- **Usage:**
+  ```bash
+  git log
+  ```
+- **Details:** Useful for tracking changes, authors, and commit messages.
+
+---
+
+#### **13. git diff**
+- **Purpose:** View differences between changes in your working directory, staging area, or commits.
+- **Usage:**
+  ```bash
+  git diff                      # Changes not staged
+  git diff --staged             # Staged changes
+  git diff <commit1> <commit2>  # Diff between commits
+  ```
+- **Details:** Crucial for reviewing code before commits.
+
+---
+
+#### **14. git reset**
+- **Purpose:** Undo changes by removing files from the staging area or resetting commits.
+- **Usage:**
+  ```bash
+  git reset <file>            # Unstage a file
+  git reset --hard <commit>   # Undo commits permanently
+  ```
+- **Details:** Be careful with `--hard`, as it discards history.
+
+---
+
+#### **15. git revert**
+- **Purpose:** Undo a commit by creating a new commit.
+- **Usage:**
+  ```bash
+  git revert <commit>
+  ```
+- **Details:** Safer than `git reset` for collaborative work.
+
+---
+
+#### **16. git stash**
+- **Purpose:** Temporarily store uncommitted changes without committing them.
+- **Usage:**
+  ```bash
+  git stash        # Save changes
+  git stash pop    # Apply changes back
+  ```
+- **Details:** Ideal for switching branches or contexts without losing progress.
+
+---
+
+#### **17. git tag**
+- **Purpose:** Create, list, or delete tags for marking commits.
+- **Usage:**
+  ```bash
+  git tag <tag-name>         # Create a tag
+  git tag                    # List tags
+  git tag -d <tag-name>      # Delete a tag
+  ```
+- **Details:** Commonly used for marking release commits.
+
+---
+
+#### **18. git remote**
+- **Purpose:** Add or manage connections to remote repositories.
+- **Usage:**
+  ```bash
+  git remote -v                   # List remotes
+  git remote add origin <url>     # Add a remote
+  git remote remove origin        # Remove a remote
+  ```
+- **Details:** Crucial for configuring your repository’s syncing points.
+
+---
+
+#### **19. git rebase**
+- **Purpose:** Rewrite commit history by replaying commits.
+- **Usage:**
+  ```bash
+  git rebase <branch-name>
+  ```
+- **Details:** Suitable for a clean, linear commit history, but use cautiously.
+
+---
+
+#### **20. git show**
+- **Purpose:** Display details about a commit or object.
+- **Usage:**
+  ```bash
+  git show <commit-id>
+  ```
+- **Details:** Provides metadata and changes (diffs) for a commit.
